@@ -11,6 +11,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <fstream>
+#include <chrono>
 
 using glm::vec2;
 using glm::vec3;
@@ -177,9 +178,17 @@ void writeImage(int image[MAX_H][MAX_W], int height, int width) {
 }
 
 
-int main()
+
+int main(int argc, char *argv[])
 {
-    const std::string MODEL_PATH = "finc.obj";
+    if (argc == 1) {
+        std::cerr << "Missing obj path" << std::endl;
+    }
+
+    auto start = std::chrono::high_resolution_clock::now();
+    
+    const std::string MODEL_PATH = argv[1];
+    // const std::string MODEL_PATH = "finc.obj";
     vector<vec3> vertices;
     vector<Triangle> triangles;
 
@@ -272,6 +281,10 @@ int main()
                 image[col_ind][row_ind] = int(255*grid[col_ind][row_ind].height/max_z);
         }
     }
+
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    std::cout << duration.count() << "ms" << std::endl;
 
     writeImage(image, nb_cols, nb_rows);
 
